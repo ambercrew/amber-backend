@@ -1,0 +1,3 @@
+api.brainylearn.app {
+	reverse_proxy webapi:8080
+}

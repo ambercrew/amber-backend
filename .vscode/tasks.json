@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build"
+            ]
+        },
+        {
+            "label": "database: start",
+            "command": "docker",
+            "type": "process",
+            "args": [
+                "compose",
+                "-f",
+                "docker-compose.local.yml",
+                "up",
+                "-d"
+            ]
+        },
+        {
+            "label": "launch: prepare",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "database: start",
+                "build"
+            ]
+        }
+    ]
+}

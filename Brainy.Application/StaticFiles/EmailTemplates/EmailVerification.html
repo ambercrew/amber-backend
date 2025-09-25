@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainy: Email Verification Code</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f9;
+            color: #2b2d42;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border: 1px solid #c9d0d6;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.08);
+        }
+        .header {
+            background-color: #2563eb;
+            padding: 36px 30px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+        .content {
+            padding: 40px 30px;
+            text-align: center;
+            background-color: #ffffff;
+        }
+        .content p {
+            color: #6c757d;
+            font-size: 16px;
+            line-height: 1.7;
+            margin: 0 0 28px;
+        }
+        .verification-code {
+            background-color: #f8f8f9;
+            border: 2px dashed #2563eb;
+            border-radius: 12px;
+            padding: 24px 32px;
+            margin: 32px 0;
+            display: inline-block;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .code {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 6px;
+            color: #2563eb;
+            font-family: 'Courier New', monospace;
+            line-height: 1;
+        }
+        .footer {
+            padding: 24px 30px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 12px;
+            background-color: #f8f8f9;
+            border-top: 1px solid #c9d0d6;
+        }
+        .footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Email Verification Code</h1>
+        </div>
+
+        <div class="content">
+            <p>Thank you for signing up! Please use the verification code below to complete your registration.</p>
+
+            <div class="verification-code">
+                <div class="code">{VerificationCode}</div>
+            </div>
+
+            <p>If you didn't request this code, please ignore this email.</p>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - brainy-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - brainy-dataprotection-keys:/root/.aspnet/DataProtection-Keys
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+
+      # Database (override the whole connection string, or rely on the default below)
+      ConnectionStrings__Database: ${CONNECTION_STRING:-Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Trust Server Certificate=true}
+
+      # Lettermint
+      Lettermint__ApiKey: ${LETTERMINT_API_KEY:-}
+
+      # Grafana
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-}
+      OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-}
+      OTEL_EXPORTER_OTLP_HEADERS: ${OTEL_EXPORTER_OTLP_HEADERS:-}
+
+  # Setting up HTTPS & TLS
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - webapi
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - brainy-caddy-data:/data
+      - brainy-caddy-config:/config
+
+  backup:
+    image: prodrigestivill/postgres-backup-local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SCHEDULE: "@daily"
+      BACKUP_KEEP_DAYS: 1
+      BACKUP_KEEP_WEEKS: 0
+      BACKUP_KEEP_MONTHS: 0
+    volumes:
+      - brainy-db-backups:/backups
+
+  backup-sync:
+    image: rclone/rclone:latest
+    restart: unless-stopped
+    depends_on:
+      - backup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          rclone copy /backups/daily hetzner:$$HETZNER_S3_BUCKET/postgres --exclude "*-latest.sql.gz"
+          rclone delete hetzner:$$HETZNER_S3_BUCKET/postgres --min-age 21d
+          sleep 86400
+        done
+    environment:
+      RCLONE_CONFIG_HETZNER_TYPE: s3
+      RCLONE_CONFIG_HETZNER_PROVIDER: Other
+      RCLONE_CONFIG_HETZNER_ENDPOINT: ${HETZNER_S3_ENDPOINT:?HETZNER_S3_ENDPOINT is required}
+      RCLONE_CONFIG_HETZNER_ACCESS_KEY_ID: ${HETZNER_S3_ACCESS_KEY:?HETZNER_S3_ACCESS_KEY is required}
+      RCLONE_CONFIG_HETZNER_SECRET_ACCESS_KEY: ${HETZNER_S3_SECRET_KEY:?HETZNER_S3_SECRET_KEY is required}
+      HETZNER_S3_BUCKET: ${HETZNER_S3_BUCKET:?HETZNER_S3_BUCKET is required}
+    volumes:
+      - brainy-db-backups:/backups
+
+volumes:
+  brainy-db-data:
+  brainy-dataprotection-keys:
+  brainy-db-backups:
+  brainy-caddy-data:
+  brainy-caddy-config:
