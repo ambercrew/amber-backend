@@ -48,10 +48,7 @@ public class GetSyncedEntitiesAfterOrderedByCreatedDateQueryHandlerTests : Repos
             CreateEntity(createdDate: _date, lastSyncDate: _date),
             CreateEntity(createdDate: _date, lastSyncDate: _date - TimeSpan.FromMinutes(1)),
         ];
-        await AmberContext.SyncedEntities.AddRangeAsync([
-            .. includedEntities,
-            .. excludedEntities,
-        ]);
+        await AmberContext.SyncedEntities.AddRangeAsync([.. includedEntities, .. excludedEntities]);
         await AmberContext.SaveChangesAsync();
 
         var query = new GetSyncedEntitiesAfterOrderedByCreatedDateQuery(_date, Page: 0, UserId);

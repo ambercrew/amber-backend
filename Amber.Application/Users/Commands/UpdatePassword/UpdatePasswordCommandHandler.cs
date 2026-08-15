@@ -18,7 +18,12 @@ public class UpdatePasswordCommandHandler(
     {
         var user = await userRepository.GetUserByUsernameAsync(command.Username);
 
-        if (!user.Password.VerifyEqual(new PlainPassword(command.UpdatePasswordDto.OldPassword)))
+        // Users who signed up via Google have no password yet, so the first time they set
+        // one there is nothing to verify against.
+        if (
+            user.Password is not null
+            && !user.Password.VerifyEqual(new PlainPassword(command.UpdatePasswordDto.OldPassword))
+        )
         {
             throw new InvalidOperationException("Incorrect password!");
         }

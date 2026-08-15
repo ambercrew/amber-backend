@@ -46,7 +46,14 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
             }
         );
 
-        builder.OwnsOne(u => u.Password).Property(u => u.Value).HasMaxLength(72).IsRequired();
+        builder.OwnsOne(u => u.Password).Property(u => u.Value).HasMaxLength(72);
+
+        builder.Property(u => u.GoogleId).HasMaxLength(255);
+        builder
+            .HasIndex(u => u.GoogleId)
+            .HasDatabaseName("users_google_id_index")
+            .IsUnique()
+            .HasFilter("\"GoogleId\" IS NOT NULL");
 
         builder.Property(u => u.FirstName).HasMaxLength(50).IsRequired();
         builder.Property(u => u.LastName).HasMaxLength(50).IsRequired();

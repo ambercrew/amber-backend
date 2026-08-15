@@ -1,5 +1,6 @@
 using Amber.Application.Queries.AreCredentialsValid;
 using Amber.Application.Users.Commands.ResendEmailVerificationCode;
+using Amber.Application.Users.Commands.SignInWithGoogle;
 using Amber.Application.Users.Commands.SignOutUser;
 using Amber.Application.Users.Commands.SignUpUser;
 using Amber.Application.Users.Commands.UpdatePassword;
@@ -72,6 +73,17 @@ public class AuthController(
         }
 
         return Unauthorized();
+    }
+
+    [HttpPost("google-sign-in")]
+    [AllowAnonymous]
+    [ProducesResponseType<SignInResponseDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesErrorResponseType(typeof(ProblemDetails))]
+    public async Task<IActionResult> GoogleSignInAsync(GoogleSignInDto googleSignInDto)
+    {
+        var user = await commandMediator.SendAsync(new SignInWithGoogleCommand(googleSignInDto));
+        return Ok(CreateSignInResponse(user));
     }
 
     [Authorize]

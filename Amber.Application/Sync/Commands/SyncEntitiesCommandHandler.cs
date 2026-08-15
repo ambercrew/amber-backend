@@ -1,8 +1,8 @@
-using AsyncKeyedLock;
 using Amber.Domain.Sync.Configurations;
 using Amber.Domain.Sync.Entities;
 using Amber.Domain.Sync.Repositories;
 using Amber.Domain.Users.ValueObjects;
+using AsyncKeyedLock;
 using LiteBus.Commands.Abstractions;
 using Microsoft.Extensions.Logging;
 

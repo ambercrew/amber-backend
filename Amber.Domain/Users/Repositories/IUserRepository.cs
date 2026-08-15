@@ -11,6 +11,8 @@ public interface IUserRepository : IUnitOfWorkRepository
     Task<bool> IsUsernameUsedAsync(Username username);
     Task<User?> GetUserByUsernameIfExistsAsync(Username username);
     Task<User> GetUserByUsernameAsync(Username username);
+    Task<User?> GetUserByEmailIfExistsAsync(Email email);
+    Task<User?> GetUserByGoogleIdIfExistsAsync(string googleId);
     Task AddAsync(User user);
     Task<DateTime> GetUserSignOutDateTimeAsync(Username username);
     Task<User> GetUserByIdAsync(Guid id);

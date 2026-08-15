@@ -1,8 +1,5 @@
 using System.Text;
 using System.Threading.RateLimiting;
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
-using AsyncKeyedLock;
 using Amber.Application.Services;
 using Amber.Application.Sync.Commands;
 using Amber.Application.Users.BackgroundJobs;
@@ -11,12 +8,16 @@ using Amber.Domain.Common.Interfaces;
 using Amber.Domain.Sync.Configurations;
 using Amber.Domain.Users.ValueObjects;
 using Amber.Infrastructure.Database;
+using Amber.Infrastructure.Users.Configurations;
 using Amber.WebApi;
 using Amber.WebApi.Configurations;
 using Amber.WebApi.Exceptions;
 using Amber.WebApi.Extensions;
 using Amber.WebApi.Middlewares;
 using Amber.WebApi.Users;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using AsyncKeyedLock;
 using EntityFramework.Exceptions.PostgreSQL;
 using Grafana.OpenTelemetry;
 using Lettermint;
@@ -131,6 +132,11 @@ else
 
 var jwtConfiguration = builder.Configuration.GetSection("Jwt").Get<JwtConfiguration>()!;
 builder.Services.AddSingleton(jwtConfiguration);
+
+var googleAuthConfiguration = builder
+    .Configuration.GetSection("GoogleAuth")
+    .Get<GoogleAuthConfiguration>()!;
+builder.Services.AddSingleton(googleAuthConfiguration);
 
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

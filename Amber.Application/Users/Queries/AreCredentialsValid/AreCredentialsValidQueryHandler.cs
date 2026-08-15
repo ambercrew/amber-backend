@@ -23,7 +23,10 @@ public class AreCredentialsValidQueryHandler(
             return false;
         }
 
-        if (user.Password.VerifyEqual(new PlainPassword(query.SignInDto.Password)))
+        if (
+            user.Password is not null
+            && user.Password.VerifyEqual(new PlainPassword(query.SignInDto.Password))
+        )
         {
             return true;
         }

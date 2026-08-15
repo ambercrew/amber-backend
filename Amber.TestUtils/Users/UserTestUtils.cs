@@ -12,10 +12,12 @@ public static class UserTestUtils
         string? firstName = null,
         string? lastName = null,
         HashedPassword? password = null,
+        bool hasPassword = true,
         DateTime? signOutDate = null,
         bool? isEmailVerified = null,
         EmailVerificationCode? emailVerificationCode = null,
-        DateTime? registrationDate = null
+        DateTime? registrationDate = null,
+        string? googleId = null
     )
     {
         return new User(
@@ -24,12 +26,15 @@ public static class UserTestUtils
             email: email ?? new Email($"{username}@test.com"),
             firstName: firstName ?? "first-name",
             lastName: lastName ?? "last-name",
-            password: password ?? new HashedPassword(new PlainPassword("testPassword123")),
+            password: hasPassword
+                ? password ?? new HashedPassword(new PlainPassword("testPassword123"))
+                : null,
             signOutDate: signOutDate ?? DateTime.UtcNow,
             isEmailVerified: isEmailVerified ?? false,
             emailVerificationCode: emailVerificationCode ?? new EmailVerificationCode("12345678"),
             lastDateTimeOfSentVerificationCode: DateTime.UtcNow,
-            registrationDate: registrationDate ?? DateTime.UtcNow
+            registrationDate: registrationDate ?? DateTime.UtcNow,
+            googleId: googleId
         );
     }
 }

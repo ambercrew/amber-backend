@@ -147,9 +147,7 @@ public class UserRepositoryTests : RepositoryTestBase
         var cutoffDate = DateTime.UtcNow;
         var user = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user);
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(user, cutoffDate.AddDays(1))
-        );
+        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user, cutoffDate.AddDays(1)));
         await _userRepository.SaveChangesAsync();
 
         // Act
@@ -217,9 +215,7 @@ public class UserRepositoryTests : RepositoryTestBase
         await AmberContext.SyncedEntities.AddAsync(
             CreateSyncedEntity(user, cutoffDate.AddDays(-1))
         );
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(user, cutoffDate.AddDays(1))
-        );
+        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user, cutoffDate.AddDays(1)));
         await _userRepository.SaveChangesAsync();
 
         // Act

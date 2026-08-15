@@ -3,8 +3,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Amber.Application.Users.Services;
 
-public class UserEmailVerificationCodeSender(IEmailService emailService, ILogger<UserEmailVerificationCodeSender> logger)
-    : IUserEmailVerificationCodeSender
+public class UserEmailVerificationCodeSender(
+    IEmailService emailService,
+    ILogger<UserEmailVerificationCodeSender> logger
+) : IUserEmailVerificationCodeSender
 {
     public async Task SendVerificationEmailAsync(User user)
     {

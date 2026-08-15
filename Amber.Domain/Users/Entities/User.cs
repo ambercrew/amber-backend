@@ -18,12 +18,13 @@ public partial class User
         Email email,
         string firstName,
         string lastName,
-        HashedPassword password,
+        HashedPassword? password,
         DateTime signOutDate,
         bool isEmailVerified,
         EmailVerificationCode emailVerificationCode,
         DateTime lastDateTimeOfSentVerificationCode,
-        DateTime registrationDate
+        DateTime registrationDate,
+        string? googleId = null
     )
     {
         Id = id;
@@ -37,6 +38,14 @@ public partial class User
         EmailVerificationCode = emailVerificationCode;
         LastDateTimeOfSentVerificationCode = lastDateTimeOfSentVerificationCode;
         RegistrationDate = registrationDate;
+        GoogleId = googleId;
+
+        if (password is null && googleId is null)
+        {
+            throw new InvalidOperationException(
+                "A user must have either a password or a linked Google account!"
+            );
+        }
     }
 
     public Guid Id { get; init; }
@@ -78,8 +87,20 @@ public partial class User
     /// </summary>
     public DateTime LastDateTimeOfSentVerificationCode { get; set; }
 
-    public HashedPassword Password { get; set; }
+    public HashedPassword? Password { get; set; }
     public DateTime SignOutDate { get; set; }
+
+    /// <summary>
+    /// The subject identifier ("sub" claim) of the user's linked Google account, if any.
+    /// Null for users who have never signed in with Google.
+    /// </summary>
+    public string? GoogleId { get; set; }
+
+    /// <summary>Links this user to a Google account, enabling sign-in with Google.</summary>
+    public void LinkGoogleAccount(string googleId)
+    {
+        GoogleId = googleId;
+    }
 
     /// <returns>
     /// True if it is okay to send the verification code, otherwise returns false.

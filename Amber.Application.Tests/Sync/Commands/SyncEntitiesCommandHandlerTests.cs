@@ -1,10 +1,10 @@
-using AsyncKeyedLock;
 using Amber.Application.Sync.Commands;
 using Amber.Application.Sync.Dto;
 using Amber.Domain.Sync.Configurations;
 using Amber.Domain.Sync.Entities;
 using Amber.Domain.Sync.Repositories;
 using Amber.Domain.Users.ValueObjects;
+using AsyncKeyedLock;
 using Microsoft.Extensions.Logging;
 
 namespace Amber.Application.Tests.Sync.Commands;

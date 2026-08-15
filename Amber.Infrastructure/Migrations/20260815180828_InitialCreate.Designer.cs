@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Amber.Infrastructure.Migrations
 {
     [DbContext(typeof(AmberContext))]
-    [Migration("20260501151258_InitialCreate")]
+    [Migration("20260815180828_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -66,6 +66,10 @@ namespace Amber.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("GoogleId")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
                     b.Property<bool>("IsEmailVerified")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -92,6 +96,11 @@ namespace Amber.Infrastructure.Migrations
                         .HasDefaultValueSql("NOW()");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GoogleId")
+                        .IsUnique()
+                        .HasDatabaseName("users_google_id_index")
+                        .HasFilter("\"GoogleId\" IS NOT NULL");
 
                     b.ToTable("users", (string)null);
                 });
@@ -196,8 +205,7 @@ namespace Amber.Infrastructure.Migrations
                     b.Navigation("EmailVerificationCode")
                         .IsRequired();
 
-                    b.Navigation("Password")
-                        .IsRequired();
+                    b.Navigation("Password");
 
                     b.Navigation("Username")
                         .IsRequired();

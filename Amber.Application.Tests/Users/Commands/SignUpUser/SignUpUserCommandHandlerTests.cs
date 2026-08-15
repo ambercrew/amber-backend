@@ -28,7 +28,7 @@ public class SignUpUserCommandHandlerTests : RepositoryTestBase
 
         _handler = new SignUpUserCommandHandler(
             _userRepository,
-            Substitute.For<IUserEmailService>(),
+            Substitute.For<IUserEmailVerificationCodeSender>(),
             randomGenerator,
             Substitute.For<ILogger<SignUpUserCommandHandler>>()
         );

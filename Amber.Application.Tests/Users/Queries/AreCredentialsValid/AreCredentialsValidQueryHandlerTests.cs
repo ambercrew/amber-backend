@@ -63,6 +63,30 @@ public class AreCredentialsValidQueryHandlerTests : RepositoryTestBase
     }
 
     [TestMethod]
+    public async Task HandleAsync_UserHasNoPassword_ReturnsFalse()
+    {
+        // Arrange
+
+        var user = UserTestUtils.CreateUser(
+            "google-user",
+            hasPassword: false,
+            googleId: "google-id"
+        );
+        await _userRepository.AddAsync(user);
+        await _userRepository.SaveChangesAsync();
+
+        var query = new AreCredentialsValidQuery(new SignInDto("google-user", "testPassword123"));
+
+        // Act
+
+        var result = await _handler.HandleAsync(query);
+
+        // Assert
+
+        result.Should().BeFalse();
+    }
+
+    [TestMethod]
     public async Task HandleAsync_ValidCredentials_ReturnsTrue()
     {
         // Arrange

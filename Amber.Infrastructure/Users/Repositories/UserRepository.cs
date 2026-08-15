@@ -23,6 +23,12 @@ public class UserRepository(AmberContext amberContext)
     public Task<User> GetUserByUsernameAsync(Username username) =>
         AmberContext.Users.SingleAsync(user => user.Username.Value == username.Value);
 
+    public Task<User?> GetUserByEmailIfExistsAsync(Email email) =>
+        AmberContext.Users.FirstOrDefaultAsync(user => user.Email.Value == email.Value);
+
+    public Task<User?> GetUserByGoogleIdIfExistsAsync(string googleId) =>
+        AmberContext.Users.FirstOrDefaultAsync(user => user.GoogleId == googleId);
+
     public async Task AddAsync(User user) => await AmberContext.Users.AddAsync(user);
 
     public Task<DateTime> GetUserSignOutDateTimeAsync(Username username) =>

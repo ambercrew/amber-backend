@@ -1,4 +1,5 @@
 using Amber.Application.Users.Commands.DeleteUser;
+using Amber.Application.Users.Services;
 using Amber.Infrastructure.Users.Repositories;
 using Amber.TestUtils;
 using Amber.TestUtils.Users;
@@ -20,6 +21,7 @@ public class DeleteUserCommandHandlerTests : RepositoryTestBase
         _deletionEmailSender = Substitute.For<IUserDeletionEmailSender>();
         _handler = new DeleteUserCommandHandler(
             _userRepository,
+            _deletionEmailSender,
             Substitute.For<ILogger<DeleteUserCommandHandler>>()
         );
     }

@@ -24,8 +24,9 @@ namespace Amber.Infrastructure.Migrations
                     IsEmailVerified = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     EmailVerificationCode = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     LastDateTimeOfSentVerificationCode = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
-                    Password_Value = table.Column<string>(type: "character varying(72)", maxLength: 72, nullable: false),
-                    SignOutDate = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()")
+                    Password_Value = table.Column<string>(type: "character varying(72)", maxLength: 72, nullable: true),
+                    SignOutDate = table.Column<DateTime>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    GoogleId = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,6 +66,13 @@ namespace Amber.Infrastructure.Migrations
                 table: "users",
                 column: "Email",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "users_google_id_index",
+                table: "users",
+                column: "GoogleId",
+                unique: true,
+                filter: "\"GoogleId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "users_username_index",

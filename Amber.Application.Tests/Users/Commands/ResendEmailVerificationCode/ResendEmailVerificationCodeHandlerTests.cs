@@ -1,4 +1,3 @@
-using AsyncKeyedLock;
 using Amber.Application.Users.Commands.ResendEmailVerificationCode;
 using Amber.Application.Users.Services;
 using Amber.Domain.Users.Entities;
@@ -6,6 +5,7 @@ using Amber.Domain.Users.ValueObjects;
 using Amber.Infrastructure.Users.Repositories;
 using Amber.TestUtils;
 using Amber.TestUtils.Users;
+using AsyncKeyedLock;
 
 namespace Amber.Application.Tests.Users.Commands.ResendEmailVerificationCode;
 
@@ -14,15 +14,15 @@ public class ResendEmailVerificationCodeCommandHandlerTests : RepositoryTestBase
 {
     private ResendEmailVerificationCodeCommandHandler _handler = null!;
     private UserRepository _userRepository = null!;
-    private IUserEmailService _userEmailService = null!;
+    private IUserEmailVerificationCodeSender _userEmailVerificationCodeSender = null!;
 
     [TestInitialize]
     public void Initialize()
     {
         _userRepository = new UserRepository(AmberContext);
-        _userEmailService = Substitute.For<IUserEmailService>();
+        _userEmailVerificationCodeSender = Substitute.For<IUserEmailVerificationCodeSender>();
         _handler = new ResendEmailVerificationCodeCommandHandler(
-            _userEmailService,
+            _userEmailVerificationCodeSender,
             _userRepository,
             new AsyncKeyedLocker<Username>()
         );
@@ -68,6 +68,8 @@ public class ResendEmailVerificationCodeCommandHandlerTests : RepositoryTestBase
 
         // Assert
 
-        await _userEmailService.Received(1).SendVerificationEmailAsync(Arg.Any<User>());
+        await _userEmailVerificationCodeSender
+            .Received(1)
+            .SendVerificationEmailAsync(Arg.Any<User>());
     }
 }

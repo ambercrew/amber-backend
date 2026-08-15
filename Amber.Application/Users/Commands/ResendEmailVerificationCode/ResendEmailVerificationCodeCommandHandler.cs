@@ -1,8 +1,8 @@
-using AsyncKeyedLock;
 using Amber.Application.Users.Services;
 using Amber.Domain.Users.Entities;
 using Amber.Domain.Users.Repositories;
 using Amber.Domain.Users.ValueObjects;
+using AsyncKeyedLock;
 using LiteBus.Commands.Abstractions;
 
 namespace Amber.Application.Users.Commands.ResendEmailVerificationCode;
