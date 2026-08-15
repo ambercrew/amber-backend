@@ -5,8 +5,8 @@
             "name": "C# Debug",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/Brainy.WebApi/bin/Debug/net10.0/Brainy.WebApi.dll",
-            "cwd": "${workspaceFolder}/Brainy.WebApi",
+            "program": "${workspaceFolder}/Amber.WebApi/bin/Debug/net10.0/Amber.WebApi.dll",
+            "cwd": "${workspaceFolder}/Amber.WebApi",
             "preLaunchTask": "launch: prepare",
             "env": {
                 "ASPNETCORE_URLS": "http://localhost:5078",

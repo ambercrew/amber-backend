@@ -17,20 +17,20 @@ show_menu() {
 
 apply_migration() {
     dotnet ef database update \
-        --startup-project ./Brainy.WebApi \
-        --project ./Brainy.Infrastructure
+        --startup-project ./Amber.WebApi \
+        --project ./Amber.Infrastructure
 }
 
 create_new_migration() {
     read -r -p "What is the name of the migration: " migrationName
     dotnet ef migrations add \
-        --startup-project ./Brainy.WebApi \
-        --project ./Brainy.Infrastructure  \
+        --startup-project ./Amber.WebApi \
+        --project ./Amber.Infrastructure  \
         "$migrationName"
 }
 
 deploy_bicep() {
-    cd ./Brainy.Infrastructure/Biceps || exit
+    cd ./Amber.Infrastructure/Biceps || exit
     # Used to force the use of the installed version.
     az config set bicep.use_binary_from_path=true
     az login
@@ -43,7 +43,7 @@ read -r -p "Please select an option: " choice
 
 case $choice in
     1)
-        dotnet watch --project ./Brainy.WebApi
+        dotnet watch --project ./Amber.WebApi
         ;;
     2)
         create_new_migration
@@ -53,8 +53,8 @@ case $choice in
         ;;
     4)
         dotnet ef migrations remove --force \
-            --startup-project ./Brainy.WebApi \
-            --project ./Brainy.Infrastructure
+            --startup-project ./Amber.WebApi \
+            --project ./Amber.Infrastructure
         create_new_migration
         apply_migration
         ;;

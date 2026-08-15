@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 dotnet build
 
 # Run (watch mode)
-dotnet watch --project ./Brainy.WebApi
+dotnet watch --project ./Amber.WebApi
 
 # Run all tests
 dotnet test
@@ -18,11 +18,11 @@ dotnet test
 dotnet test --filter "ClassName.TestMethodName"
 
 # Run a specific project's tests
-dotnet test Brainy.WebApi.IntegrationTests
+dotnet test Amber.WebApi.IntegrationTests
 
 # EF Core migrations
-dotnet ef migrations add {MigrationName} --startup-project ./Brainy.WebApi --project ./Brainy.Infrastructure
-dotnet ef database update --startup-project ./Brainy.WebApi --project ./Brainy.Infrastructure
+dotnet ef migrations add {MigrationName} --startup-project ./Amber.WebApi --project ./Amber.Infrastructure
+dotnet ef database update --startup-project ./Amber.WebApi --project ./Amber.Infrastructure
 ```
 
 CSharpier runs automatically as a pre-commit hook via Husky.Net. To format manually: `dotnet csharpier format .`
@@ -31,18 +31,18 @@ CSharpier runs automatically as a pre-commit hook via Husky.Net. To format manua
 
 Clean Architecture with CQRS across four layers:
 
-- **Brainy.Domain** — Entities, value objects, repository interfaces. No dependencies on other layers.
-- **Brainy.Application** — CQRS commands/queries/handlers, DTOs, application services. Depends only on Domain.
-- **Brainy.Infrastructure** — EF Core `BrainyContext` (PostgreSQL), repository implementations, email, background jobs. Depends on Domain and Application.
-- **Brainy.WebApi** — Controllers, middleware, DI wiring, rate limiting, cookie auth. Depends on all layers.
+- **Amber.Domain** — Entities, value objects, repository interfaces. No dependencies on other layers.
+- **Amber.Application** — CQRS commands/queries/handlers, DTOs, application services. Depends only on Domain.
+- **Amber.Infrastructure** — EF Core `AmberContext` (PostgreSQL), repository implementations, email, background jobs. Depends on Domain and Application.
+- **Amber.WebApi** — Controllers, middleware, DI wiring, rate limiting, cookie auth. Depends on all layers.
 
-**Test projects:** `Brainy.Domain.Tests`, `Brainy.Application.Tests`, `Brainy.Infrastructure.Tests`, `Brainy.WebApi.Tests` (unit), `Brainy.WebApi.IntegrationTests` (full HTTP stack with SQLite in-memory).
+**Test projects:** `Amber.Domain.Tests`, `Amber.Application.Tests`, `Amber.Infrastructure.Tests`, `Amber.WebApi.Tests` (unit), `Amber.WebApi.IntegrationTests` (full HTTP stack with SQLite in-memory).
 
 ## CQRS with LiteBus
 
-Commands and queries are mediated via **LiteBus**. All handlers are auto-registered from the `Brainy.Application` assembly.
+Commands and queries are mediated via **LiteBus**. All handlers are auto-registered from the `Amber.Application` assembly.
 
-Feature folders live under `Brainy.Application/{Feature}/Commands/{Name}/` and `.../Queries/{Name}/`. Each folder contains the command/query record and its handler:
+Feature folders live under `Amber.Application/{Feature}/Commands/{Name}/` and `.../Queries/{Name}/`. Each folder contains the command/query record and its handler:
 
 ```csharp
 // Command
@@ -67,9 +67,9 @@ Queries return a result via `IQuery<TResult>` and `IQueryHandler<TQuery, TResult
 
 ## Testing
 
-Unit tests use **MSTest** + **NSubstitute** (mocking) + **AwesomeAssertions** (fluent). Integration tests use `WebApplicationFactory<Program>` with `BrainyWebApplicationFactory`, which swaps the real PostgreSQL `DbContext` for an in-memory SQLite one and auto-creates the schema. Base classes `IntegrationTestBase` and `RepositoryTestBase` handle setup/teardown.
+Unit tests use **MSTest** + **NSubstitute** (mocking) + **AwesomeAssertions** (fluent). Integration tests use `WebApplicationFactory<Program>` with `AmberWebApplicationFactory`, which swaps the real PostgreSQL `DbContext` for an in-memory SQLite one and auto-creates the schema. Base classes `IntegrationTestBase` and `RepositoryTestBase` handle setup/teardown.
 
-Architecture tests in `Brainy.Domain.Tests` use **NetArchTest.Rules** to enforce layer dependency rules.
+Architecture tests in `Amber.Domain.Tests` use **NetArchTest.Rules** to enforce layer dependency rules.
 
 Coverage is collected via Coverlet (XPlat format). Minimum threshold is 70%; DTOs, exceptions, and migrations are excluded.
 

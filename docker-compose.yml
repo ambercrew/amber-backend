@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
-      - brainy-db-data:/var/lib/postgresql/data
+      - amber-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
@@ -23,7 +23,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     volumes:
-      - brainy-dataprotection-keys:/root/.aspnet/DataProtection-Keys
+      - amber-dataprotection-keys:/root/.aspnet/DataProtection-Keys
     environment:
       ASPNETCORE_HTTP_PORTS: 8080
 
@@ -52,8 +52,8 @@ services:
       - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - brainy-caddy-data:/data
-      - brainy-caddy-config:/config
+      - amber-caddy-data:/data
+      - amber-caddy-config:/config
 
   backup:
     image: prodrigestivill/postgres-backup-local
@@ -71,7 +71,7 @@ services:
       BACKUP_KEEP_WEEKS: 0
       BACKUP_KEEP_MONTHS: 0
     volumes:
-      - brainy-db-backups:/backups
+      - amber-db-backups:/backups
 
   backup-sync:
     image: rclone/rclone:latest
@@ -94,11 +94,11 @@ services:
       RCLONE_CONFIG_HETZNER_SECRET_ACCESS_KEY: ${HETZNER_S3_SECRET_KEY:?HETZNER_S3_SECRET_KEY is required}
       HETZNER_S3_BUCKET: ${HETZNER_S3_BUCKET:?HETZNER_S3_BUCKET is required}
     volumes:
-      - brainy-db-backups:/backups
+      - amber-db-backups:/backups
 
 volumes:
-  brainy-db-data:
-  brainy-dataprotection-keys:
-  brainy-db-backups:
-  brainy-caddy-data:
-  brainy-caddy-config:
+  amber-db-data:
+  amber-dataprotection-keys:
+  amber-db-backups:
+  amber-caddy-data:
+  amber-caddy-config:

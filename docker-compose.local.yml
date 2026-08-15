@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - brainy-local-db-data:/var/lib/postgresql/data
+      - amber-local-db-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -17,4 +17,4 @@ services:
       retries: 5
 
 volumes:
-  brainy-local-db-data:
+  amber-local-db-data:

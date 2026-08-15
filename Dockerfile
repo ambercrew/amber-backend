@@ -3,19 +3,19 @@ ARG BUILD_CONFIGURATION=Release
 ENV HUSKY=0
 WORKDIR /src
 
-COPY Brainy.Domain/Brainy.Domain.csproj Brainy.Domain/
-COPY Brainy.Application/Brainy.Application.csproj Brainy.Application/
-COPY Brainy.Infrastructure/Brainy.Infrastructure.csproj Brainy.Infrastructure/
-COPY Brainy.WebApi/Brainy.WebApi.csproj Brainy.WebApi/
+COPY Amber.Domain/Amber.Domain.csproj Amber.Domain/
+COPY Amber.Application/Amber.Application.csproj Amber.Application/
+COPY Amber.Infrastructure/Amber.Infrastructure.csproj Amber.Infrastructure/
+COPY Amber.WebApi/Amber.WebApi.csproj Amber.WebApi/
 
-RUN dotnet restore Brainy.WebApi/Brainy.WebApi.csproj
+RUN dotnet restore Amber.WebApi/Amber.WebApi.csproj
 
-COPY Brainy.Domain/ Brainy.Domain/
-COPY Brainy.Application/ Brainy.Application/
-COPY Brainy.Infrastructure/ Brainy.Infrastructure/
-COPY Brainy.WebApi/ Brainy.WebApi/
+COPY Amber.Domain/ Amber.Domain/
+COPY Amber.Application/ Amber.Application/
+COPY Amber.Infrastructure/ Amber.Infrastructure/
+COPY Amber.WebApi/ Amber.WebApi/
 
-RUN dotnet publish Brainy.WebApi/Brainy.WebApi.csproj \
+RUN dotnet publish Amber.WebApi/Amber.WebApi.csproj \
     -c $BUILD_CONFIGURATION \
     -o /app/publish
 
@@ -32,4 +32,4 @@ COPY --from=build /app/publish ./
 ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "Brainy.WebApi.dll"]
+ENTRYPOINT ["dotnet", "Amber.WebApi.dll"]

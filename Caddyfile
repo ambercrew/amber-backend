@@ -1,3 +1,3 @@
-api.brainylearn.app {
+api.amberapp.dev {
 	reverse_proxy webapi:8080
 }

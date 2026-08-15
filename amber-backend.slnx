@@ -1,0 +1,16 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Amber.Application/Amber.Application.csproj" />
+  <Project Path="Amber.Domain.Tests/Amber.Domain.Tests.csproj" />
+  <Project Path="Amber.Domain/Amber.Domain.csproj" />
+  <Project Path="Amber.Infrastructure.Tests/Amber.Infrastructure.Tests.csproj" />
+  <Project Path="Amber.Infrastructure/Amber.Infrastructure.csproj" />
+  <Project Path="Amber.TestUtils/Amber.TestUtils.csproj" />
+  <Project Path="Amber.WebApi.IntegrationTests/Amber.WebApi.IntegrationTests.csproj" />
+  <Project Path="Amber.WebApi.Tests/Amber.WebApi.Tests.csproj" />
+  <Project Path="Amber.WebApi/Amber.WebApi.csproj" />
+</Solution>
