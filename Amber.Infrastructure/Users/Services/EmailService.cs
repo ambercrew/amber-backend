@@ -38,7 +38,7 @@ public class EmailService(ILettermintSendingClient lettermintClient, ILogger<Ema
 #endif
 
         await lettermintClient
-            .Email.From("Amber", "no-reply@amberlearn.app")
+            .Email.From("Amber", "no-reply@amberapp.dev")
             .To(email.Value)
             .Subject(subject)
             .SetHtmlBody(html)
