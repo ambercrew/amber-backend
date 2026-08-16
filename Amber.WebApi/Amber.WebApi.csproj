@@ -11,7 +11,12 @@
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
     <PackageReference Include="AsyncKeyedLock" Version="8.0.2" />
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
     <PackageReference Include="Grafana.OpenTelemetry" Version="1.11.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.83.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference
       Include="LiteBus.Messaging.Extensions.Microsoft.DependencyInjection"
       Version="6.0.2"
@@ -34,6 +39,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="Sync\Protos\change_batch.proto" GrpcServices="None" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Amber.Infrastructure\Amber.Infrastructure.csproj" />

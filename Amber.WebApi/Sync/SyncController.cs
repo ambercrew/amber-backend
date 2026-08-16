@@ -2,6 +2,7 @@ using Amber.Application.Sync.Commands;
 using Amber.Application.Sync.Dto;
 using Amber.Application.Sync.Queries.GetSyncedEntitiesAfterOrderedByCreatedDateQuery;
 using Amber.WebApi.Extensions;
+using Amber.WebApi.Sync.Protos;
 using LiteBus.Commands.Abstractions;
 using LiteBus.Queries.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -48,6 +49,21 @@ public class SyncController(IQueryMediator queryMediator, ICommandMediator comma
             new SyncEntitiesCommand(dto, userId, username),
             cancellationToken
         );
+        return Ok();
+    }
+
+    [HttpPost]
+    [Consumes("application/x-protobuf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesErrorResponseType(typeof(ProblemDetails))]
+    public async Task<IActionResult> ReceiveChangeBatchAsync(CancellationToken cancellationToken)
+    {
+        // TODO: move this into other methods and fix data model and all
+        using var memoryStream = new MemoryStream();
+        await Request.Body.CopyToAsync(memoryStream, cancellationToken);
+        _ = ChangeBatch.Parser.ParseFrom(memoryStream.ToArray());
+
         return Ok();
     }
 }
