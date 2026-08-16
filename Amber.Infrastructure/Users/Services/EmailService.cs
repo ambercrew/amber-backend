@@ -1,11 +1,11 @@
 using Amber.Application.Users.Services;
 using Amber.Domain.Users.ValueObjects;
-using Lettermint;
+using lettermint_dotnet.SendingApi;
 using Microsoft.Extensions.Logging;
 
 namespace Amber.Infrastructure.Users.Services;
 
-public class EmailService(ILettermintClient lettermintClient, ILogger<EmailService> logger)
+public class EmailService(ILettermintSendingClient lettermintClient, ILogger<EmailService> logger)
     : IEmailService
 {
     public async Task SendEmailFromTemplateAsync(

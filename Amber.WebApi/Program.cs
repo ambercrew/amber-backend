@@ -23,6 +23,7 @@ using Grafana.OpenTelemetry;
 using Lettermint;
 using LiteBus.Commands;
 using LiteBus.Extensions.Microsoft.DependencyInjection;
+using LiteBus.Messaging;
 using LiteBus.Queries;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
@@ -203,8 +204,9 @@ builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 builder.Services.AddLiteBus(liteBus =>
 {
     var appAssembly = typeof(GetUserByUsernameQuery).Assembly;
-    liteBus.AddCommandModule(module => module.RegisterFromAssembly(appAssembly));
-    liteBus.AddQueryModule(module => module.RegisterFromAssembly(appAssembly));
+    liteBus.AddMessaging(_ => { });
+    liteBus.AddCommands(commands => commands.RegisterFromAssembly(appAssembly));
+    liteBus.AddQueries(queries => queries.RegisterFromAssembly(appAssembly));
 });
 
 builder.Services.AddLettermint(options =>

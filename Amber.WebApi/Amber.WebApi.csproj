@@ -10,26 +10,30 @@
     <PackageReference Include="Asp.Versioning.Mvc" Version="10.2.1" />
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
     <PackageReference Include="AsyncKeyedLock" Version="8.0.2" />
-    <PackageReference Include="Azure.Identity" Version="1.20.0" />
-    <PackageReference Include="Grafana.OpenTelemetry" Version="1.7.0" />
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Grafana.OpenTelemetry" Version="1.11.0" />
+    <PackageReference
+      Include="LiteBus.Messaging.Extensions.Microsoft.DependencyInjection"
+      Version="6.0.2"
+    />
     <PackageReference
       Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection"
-      Version="4.3.0"
+      Version="6.0.2"
     />
     <PackageReference
       Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection"
-      Version="4.3.0"
+      Version="6.0.2"
     />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Amber.Infrastructure\Amber.Infrastructure.csproj" />

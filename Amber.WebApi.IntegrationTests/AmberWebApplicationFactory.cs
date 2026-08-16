@@ -2,7 +2,6 @@ using Amber.Application.Services;
 using Amber.Application.Users.Services;
 using Amber.Infrastructure.Database;
 using Amber.WebApi.IntegrationTests.Services;
-using LiteBus.Messaging.Registry;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -20,8 +19,6 @@ internal class AmberWebApplicationFactory : WebApplicationFactory<Program>, IDis
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        MessageRegistryAccessor.Instance.Clear();
-
         _connection = new SqliteConnection("Filename=:memory:");
         _connection.CreateFunction("now", () => DateTime.Now);
         _connection.Open();
@@ -42,6 +39,5 @@ internal class AmberWebApplicationFactory : WebApplicationFactory<Program>, IDis
     {
         base.Dispose();
         _connection.Dispose();
-        MessageRegistryAccessor.Instance.Clear();
     }
 }
