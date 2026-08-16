@@ -61,7 +61,19 @@ public class SignUpUserCommandHandler(
             command.SignUpDto.Email
         );
 
-        await userEmailVerificationCodeSender.SendVerificationEmailAsync(user);
+        try
+        {
+            await userEmailVerificationCodeSender.SendVerificationEmailAsync(user);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(
+                exception,
+                "Failed to send verification email to user with username '{Username}'.",
+                command.SignUpDto.Username
+            );
+        }
+
         return UserInformationDto.FromUser(user);
     }
 }
