@@ -24,6 +24,7 @@ internal sealed class DefaultExceptionHandler<T>(ILogger<T> logger) : IException
         {
             UnauthorizedException => StatusCodes.Status401Unauthorized,
             InternalErrorException => StatusCodes.Status500InternalServerError,
+            InsufficientStorageException => StatusCodes.Status507InsufficientStorage,
             _ => StatusCodes.Status400BadRequest,
         };
         httpContext.Response.StatusCode = statusCode;

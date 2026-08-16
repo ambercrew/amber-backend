@@ -17,39 +17,51 @@ namespace Amber.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.5")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Amber.Domain.Sync.Entities.SyncedEntity", b =>
+            modelBuilder.Entity("Amber.Domain.Sync.Entities.SyncCell", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("EntityId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("Table")
+                        .HasColumnType("text")
+                        .HasColumnName("tbl");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamptz");
+                    b.Property<string>("RowId")
+                        .HasColumnType("text")
+                        .HasColumnName("row_id");
 
-                    b.Property<byte[]>("Data")
-                        .HasColumnType("bytea");
+                    b.Property<string>("Column")
+                        .HasColumnType("text")
+                        .HasColumnName("col");
 
-                    b.Property<int>("EntityType")
-                        .HasColumnType("integer");
+                    b.Property<string>("DeviceId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("LastSyncDate")
-                        .HasColumnType("timestamptz");
+                    b.Property<long>("ServerSeq")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("SizeInBytes")
                         .HasColumnType("bigint");
 
-                    b.HasKey("UserId", "EntityId");
+                    b.Property<byte[]>("Value")
+                        .HasColumnType("bytea");
 
-                    b.HasIndex("UserId", "LastSyncDate");
+                    b.Property<DateTime>("WrittenAt")
+                        .HasColumnType("timestamptz");
 
-                    b.ToTable("synced_entities", (string)null);
+                    b.HasKey("UserId", "Table", "RowId", "Column");
+
+                    b.HasIndex("UserId", "ServerSeq");
+
+                    b.HasIndex("UserId", "WrittenAt");
+
+                    b.ToTable("sync_cells", (string)null);
                 });
 
             modelBuilder.Entity("Amber.Domain.Users.Entities.User", b =>
@@ -102,12 +114,42 @@ namespace Amber.Infrastructure.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("Amber.Domain.Sync.Entities.SyncedEntity", b =>
+            modelBuilder.Entity("Amber.Domain.Sync.Entities.SyncCell", b =>
                 {
                     b.HasOne("Amber.Domain.Users.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Amber.Domain.Sync.ValueObjects.Hlc", "Hlc", b1 =>
+                        {
+                            b1.Property<Guid>("SyncCellUserId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("SyncCellTable")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("SyncCellRowId")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("SyncCellColumn")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("Hlc");
+
+                            b1.HasKey("SyncCellUserId", "SyncCellTable", "SyncCellRowId", "SyncCellColumn");
+
+                            b1.ToTable("sync_cells");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SyncCellUserId", "SyncCellTable", "SyncCellRowId", "SyncCellColumn");
+                        });
+
+                    b.Navigation("Hlc")
                         .IsRequired();
                 });
 

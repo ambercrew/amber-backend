@@ -9,7 +9,7 @@ namespace Amber.Infrastructure.Database;
 public class AmberContext(DbContextOptions<AmberContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<SyncedEntity> SyncedEntities { get; set; }
+    public DbSet<SyncCell> SyncCells { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
