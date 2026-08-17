@@ -9,7 +9,6 @@ namespace Amber.Domain.Sync.Entities;
 /// whole row as a JSON payload for tables synced at row granularity. Conflicts between
 /// devices are resolved last-write-wins by comparing <see cref="Hlc"/>.
 /// </summary>
-// TODO: unit test
 public class SyncCell
 {
     /// <summary>

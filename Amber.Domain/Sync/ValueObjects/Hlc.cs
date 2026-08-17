@@ -9,7 +9,6 @@ namespace Amber.Domain.Sync.ValueObjects;
 /// comparison/ordering (e.g. in SQL) matches causal order. Used as the version
 /// for last-write-wins conflict resolution between devices.
 /// </summary>
-// TODO: unit test
 public partial class Hlc : ValueObject
 {
     [GeneratedRegex(@"^\d+-[0-9A-Fa-f]+-\S+$")]
