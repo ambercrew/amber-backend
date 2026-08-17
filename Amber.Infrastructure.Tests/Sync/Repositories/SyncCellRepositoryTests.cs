@@ -178,9 +178,9 @@ public class SyncCellRepositoryTests : RepositoryTestBase
         actual[1].Id.RowId.Should().Be("row-3");
     }
 
-    private static SyncCell CreateCell(string rowId, string hlc, string value) =>
+    private SyncCell CreateCell(string rowId, string hlc, string value) =>
         new(
-            new SyncCellId(Guid.Empty, "notes", rowId, "title"),
+            new SyncCellId(_userId, "notes", rowId, "title"),
             System.Text.Encoding.UTF8.GetBytes(value),
             new Hlc(hlc),
             "device1"

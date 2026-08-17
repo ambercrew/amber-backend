@@ -70,6 +70,40 @@ public class HlcTests
     }
 
     [TestMethod]
+    public void IsAfter_LaterValueWithFewerDigits_ReturnsTrue()
+    {
+        // Arrange
+
+        var earlier = new Hlc("9-0-device");
+        var later = new Hlc("10-0-device");
+
+        // Act
+
+        var actual = later.IsAfter(earlier);
+
+        // Assert
+
+        actual.Should().BeTrue();
+    }
+
+    [TestMethod]
+    public void IsAfter_SamePhysicalTimeLaterCounterWithFewerDigits_ReturnsTrue()
+    {
+        // Arrange
+
+        var earlier = new Hlc("100-9-device");
+        var later = new Hlc("100-a-device");
+
+        // Act
+
+        var actual = later.IsAfter(earlier);
+
+        // Assert
+
+        actual.Should().BeTrue();
+    }
+
+    [TestMethod]
     public void IsAfter_SameValue_ReturnsFalse()
     {
         // Arrange

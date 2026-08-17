@@ -26,7 +26,9 @@ public class SyncCellRepository(AmberContext amberContext)
         // so a batch that touches the same cell more than once doesn't race against itself.
         var dedupedCells = cells
             .GroupBy(c => (c.Id.Table, c.Id.RowId, c.Id.Column))
-            .Select(g => g.OrderByDescending(c => c.Hlc.Value, StringComparer.Ordinal).First())
+            .Select(g =>
+                g.Aggregate((latest, next) => next.Hlc.IsAfter(latest.Hlc) ? next : latest)
+            )
             .ToList();
 
         var nextServerSeq =
