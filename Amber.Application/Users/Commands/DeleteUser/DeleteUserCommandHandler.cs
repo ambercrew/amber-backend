@@ -26,6 +26,17 @@ public class DeleteUserCommandHandler(
             throw new InvalidOperationException("User does not exist.");
         }
 
-        await userDeletionEmailSender.SendDeletionEmailAsync(user);
+        try
+        {
+            await userDeletionEmailSender.SendDeletionEmailAsync(user);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(
+                exception,
+                "Failed to send deletion email to user with id {Id}.",
+                command.UserId
+            );
+        }
     }
 }

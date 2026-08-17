@@ -34,22 +34,25 @@ namespace Amber.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "synced_entities",
+                name: "sync_cells",
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    EntityId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamptz", nullable: false),
-                    LastSyncDate = table.Column<DateTime>(type: "timestamptz", nullable: false),
-                    EntityType = table.Column<int>(type: "integer", nullable: false),
-                    Data = table.Column<byte[]>(type: "bytea", nullable: true),
+                    tbl = table.Column<string>(type: "text", nullable: false),
+                    row_id = table.Column<string>(type: "text", nullable: false),
+                    col = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<byte[]>(type: "bytea", nullable: true),
+                    Hlc = table.Column<string>(type: "text", nullable: false),
+                    DeviceId = table.Column<string>(type: "text", nullable: false),
+                    ServerSeq = table.Column<long>(type: "bigint", nullable: false),
+                    WrittenAt = table.Column<DateTime>(type: "timestamptz", nullable: false),
                     SizeInBytes = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_synced_entities", x => new { x.UserId, x.EntityId });
+                    table.PrimaryKey("PK_sync_cells", x => new { x.UserId, x.tbl, x.row_id, x.col });
                     table.ForeignKey(
-                        name: "FK_synced_entities_users_UserId",
+                        name: "FK_sync_cells_users_UserId",
                         column: x => x.UserId,
                         principalTable: "users",
                         principalColumn: "Id",
@@ -57,9 +60,14 @@ namespace Amber.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_synced_entities_UserId_LastSyncDate",
-                table: "synced_entities",
-                columns: new[] { "UserId", "LastSyncDate" });
+                name: "IX_sync_cells_UserId_ServerSeq",
+                table: "sync_cells",
+                columns: new[] { "UserId", "ServerSeq" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_sync_cells_UserId_WrittenAt",
+                table: "sync_cells",
+                columns: new[] { "UserId", "WrittenAt" });
 
             migrationBuilder.CreateIndex(
                 name: "users_email_index",
@@ -85,7 +93,7 @@ namespace Amber.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "synced_entities");
+                name: "sync_cells");
 
             migrationBuilder.DropTable(
                 name: "users");

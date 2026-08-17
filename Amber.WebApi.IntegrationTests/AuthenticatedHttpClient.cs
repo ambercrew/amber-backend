@@ -117,6 +117,12 @@ public class AuthenticatedHttpClient
                 content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 request.Content = content;
             }
+            else if (bodyType == BodyType.Protobuf)
+            {
+                var content = new ByteArrayContent((byte[])body);
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/x-protobuf");
+                request.Content = content;
+            }
         }
         var response = await HttpClient.SendAsync(request);
         return response;
@@ -140,4 +146,5 @@ public enum BodyType
 {
     Json,
     Bytes,
+    Protobuf,
 }

@@ -48,20 +48,18 @@ public class UserRepository(AmberContext amberContext)
         CancellationToken cancellationToken = default
     )
     {
-        var usersWithSyncedEntities =
-            from syncedEntity in AmberContext.SyncedEntities
-            group syncedEntity by syncedEntity.UserId into g
-            where g.Max(se => se.LastSyncDate) < cutoffDate
+        var usersWithSyncCells =
+            from syncCell in AmberContext.SyncCells
+            group syncCell by syncCell.UserId into g
+            where g.Max(c => c.WrittenAt) < cutoffDate
             select g.Key;
 
-        var usersWithNoSyncedEntities =
+        var usersWithNoSyncCells =
             from user in AmberContext.Users
             where user.RegistrationDate < cutoffDate
-            where !AmberContext.SyncedEntities.Any(syncedEntity => syncedEntity.UserId == user.Id)
+            where !AmberContext.SyncCells.Any(syncCell => syncCell.UserId == user.Id)
             select user.Id;
 
-        return await usersWithSyncedEntities
-            .Concat(usersWithNoSyncedEntities)
-            .ToListAsync(cancellationToken);
+        return await usersWithSyncCells.Concat(usersWithNoSyncCells).ToListAsync(cancellationToken);
     }
 }

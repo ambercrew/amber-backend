@@ -103,3 +103,9 @@ public async Task HandleAsync_Scenario_ExpectedResult()
     actual.Should()...;
 }
 ```
+
+## Sync
+
+Cell-level, offline-first sync (modeled on the desktop client's Rust CRDT engine), replacing the old whole-blob `SyncedEntity` model. `Amber.Domain/Sync/Entities/SyncCell.cs` is keyed by `(UserId, Table, RowId, Column)` and resolves conflicts last-write-wins via `Hlc` (a fixed-width, lexicographically sortable clock string). `SyncCellId` bundles the key for domain code but isn't itself EF-mapped — EF Core can't key on complex/owned properties, so the four components stay flat columns on `SyncCell`; only use `.Id.*` on already-materialized collections, never inside an `IQueryable` predicate.
+
+Flow: `SyncController` (`POST /push`, `GET /pull`, protobuf wire format, user always from `GetSignedInUserId()`) → `PushChangesCommand`/`PullChangesQuery` → `ISyncCellRepository`, whose `TryUpsertCellsAsync` applies LWW upserts in a transaction and rolls back if the user's total storage would exceed `SyncConfiguration.MaxStoragePerUserInBytes`.

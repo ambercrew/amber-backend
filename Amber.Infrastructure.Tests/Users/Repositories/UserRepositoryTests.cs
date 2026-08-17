@@ -1,4 +1,5 @@
 using Amber.Domain.Sync.Entities;
+using Amber.Domain.Sync.ValueObjects;
 using Amber.Domain.Users.Entities;
 using Amber.Infrastructure.Users.Repositories;
 using Amber.TestUtils;
@@ -18,18 +19,18 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task DeleteUserByIdAsync_UserWithSyncedEntities_DeletedUserAndSyncedEntities()
+    public async Task DeleteUserByIdAsync_UserWithSyncCells_DeletedUserAndSyncCells()
     {
         // Arrange
 
         var user1 = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user1);
-        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user1));
-        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user1));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user1));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user1));
 
         var user2 = UserTestUtils.CreateUser("user2");
         await _userRepository.AddAsync(user2);
-        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user2));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user2));
 
         await _userRepository.SaveChangesAsync();
 
@@ -40,8 +41,8 @@ public class UserRepositoryTests : RepositoryTestBase
         // Assert
 
         actual.Should().Be(1);
-        // Ensuring that user1 synced entities are deleted and just user2 synced entities exist.
-        AmberContext.SyncedEntities.Single().UserId.Should().Be(user2.Id);
+        // Ensuring that user1 sync cells are deleted and just user2 sync cells exist.
+        AmberContext.SyncCells.Single().Id.UserId.Should().Be(user2.Id);
     }
 
     [TestMethod]
@@ -61,7 +62,7 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithNoSyncedEntitiesRegisteredBeforeCutoff_ReturnsUser()
+    public async Task GetInactiveUsersAsync_UserWithNoSyncCellsRegisteredBeforeCutoff_ReturnsUser()
     {
         // Arrange
 
@@ -80,7 +81,7 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithNoSyncedEntitiesRegisteredAfterCutoff_ReturnsEmpty()
+    public async Task GetInactiveUsersAsync_UserWithNoSyncCellsRegisteredAfterCutoff_ReturnsEmpty()
     {
         // Arrange
 
@@ -99,7 +100,7 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithNoSyncedEntitiesRegisteredExactlyAtCutoff_ReturnsEmpty()
+    public async Task GetInactiveUsersAsync_UserWithNoSyncCellsRegisteredExactlyAtCutoff_ReturnsEmpty()
     {
         // Arrange
 
@@ -118,16 +119,14 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithSyncedEntityLastSyncedBeforeCutoff_ReturnsUser()
+    public async Task GetInactiveUsersAsync_UserWithSyncCellWrittenBeforeCutoff_ReturnsUser()
     {
         // Arrange
 
         var cutoffDate = DateTime.UtcNow;
         var user = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user);
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(user, cutoffDate.AddDays(-1))
-        );
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate.AddDays(-1)));
         await _userRepository.SaveChangesAsync();
 
         // Act
@@ -140,14 +139,14 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithSyncedEntityLastSyncedAfterCutoff_ReturnsEmpty()
+    public async Task GetInactiveUsersAsync_UserWithSyncCellWrittenAfterCutoff_ReturnsEmpty()
     {
         // Arrange
 
         var cutoffDate = DateTime.UtcNow;
         var user = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user);
-        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user, cutoffDate.AddDays(1)));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate.AddDays(1)));
         await _userRepository.SaveChangesAsync();
 
         // Act
@@ -160,14 +159,14 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithSyncedEntityLastSyncedExactlyAtCutoff_ReturnsEmpty()
+    public async Task GetInactiveUsersAsync_UserWithSyncCellWrittenExactlyAtCutoff_ReturnsEmpty()
     {
         // Arrange
 
         var cutoffDate = DateTime.UtcNow;
         var user = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user);
-        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user, cutoffDate));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate));
         await _userRepository.SaveChangesAsync();
 
         // Act
@@ -180,19 +179,15 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithMultipleSyncedEntitiesLatestBeforeCutoff_ReturnsUser()
+    public async Task GetInactiveUsersAsync_UserWithMultipleSyncCellsLatestBeforeCutoff_ReturnsUser()
     {
         // Arrange
 
         var cutoffDate = DateTime.UtcNow;
         var user = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user);
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(user, cutoffDate.AddDays(-3))
-        );
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(user, cutoffDate.AddDays(-1))
-        );
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate.AddDays(-3)));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate.AddDays(-1)));
         await _userRepository.SaveChangesAsync();
 
         // Act
@@ -205,17 +200,15 @@ public class UserRepositoryTests : RepositoryTestBase
     }
 
     [TestMethod]
-    public async Task GetInactiveUsersAsync_UserWithMultipleSyncedEntitiesLatestAfterCutoff_ReturnsEmpty()
+    public async Task GetInactiveUsersAsync_UserWithMultipleSyncCellsLatestAfterCutoff_ReturnsEmpty()
     {
         // Arrange
 
         var cutoffDate = DateTime.UtcNow;
         var user = UserTestUtils.CreateUser("user1");
         await _userRepository.AddAsync(user);
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(user, cutoffDate.AddDays(-1))
-        );
-        await AmberContext.SyncedEntities.AddAsync(CreateSyncedEntity(user, cutoffDate.AddDays(1)));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate.AddDays(-1)));
+        await AmberContext.SyncCells.AddAsync(CreateSyncCell(user, cutoffDate.AddDays(1)));
         await _userRepository.SaveChangesAsync();
 
         // Act
@@ -234,22 +227,22 @@ public class UserRepositoryTests : RepositoryTestBase
 
         var cutoffDate = DateTime.UtcNow;
 
-        var inactiveUserWithSyncedEntity = UserTestUtils.CreateUser("inactive-synced");
-        await _userRepository.AddAsync(inactiveUserWithSyncedEntity);
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(inactiveUserWithSyncedEntity, cutoffDate.AddDays(-1))
+        var inactiveUserWithSyncCell = UserTestUtils.CreateUser("inactive-synced");
+        await _userRepository.AddAsync(inactiveUserWithSyncCell);
+        await AmberContext.SyncCells.AddAsync(
+            CreateSyncCell(inactiveUserWithSyncCell, cutoffDate.AddDays(-1))
         );
 
-        var inactiveUserWithNoSyncedEntities = UserTestUtils.CreateUser(
+        var inactiveUserWithNoSyncCells = UserTestUtils.CreateUser(
             "inactive-no-synced",
             registrationDate: cutoffDate.AddDays(-1)
         );
-        await _userRepository.AddAsync(inactiveUserWithNoSyncedEntities);
+        await _userRepository.AddAsync(inactiveUserWithNoSyncCells);
 
         var activeUserWithRecentSync = UserTestUtils.CreateUser("active-synced");
         await _userRepository.AddAsync(activeUserWithRecentSync);
-        await AmberContext.SyncedEntities.AddAsync(
-            CreateSyncedEntity(activeUserWithRecentSync, cutoffDate.AddDays(1))
+        await AmberContext.SyncCells.AddAsync(
+            CreateSyncCell(activeUserWithRecentSync, cutoffDate.AddDays(1))
         );
 
         var activeUserRecentlyRegistered = UserTestUtils.CreateUser(
@@ -267,10 +260,19 @@ public class UserRepositoryTests : RepositoryTestBase
         // Assert
 
         actual.Should().HaveCount(2);
-        actual.Should().Contain(inactiveUserWithSyncedEntity.Id);
-        actual.Should().Contain(inactiveUserWithNoSyncedEntities.Id);
+        actual.Should().Contain(inactiveUserWithSyncCell.Id);
+        actual.Should().Contain(inactiveUserWithNoSyncCells.Id);
     }
 
-    private static SyncedEntity CreateSyncedEntity(User user, DateTime? lastSyncDate = null) =>
-        new(user.Id, Guid.NewGuid(), DateTime.UtcNow, lastSyncDate ?? DateTime.UtcNow, 1, []);
+    private static SyncCell CreateSyncCell(User user, DateTime? writtenAt = null) =>
+        new(
+            new SyncCellId(user.Id, "notes", Guid.NewGuid().ToString(), "title"),
+            [],
+            new Hlc("000000000000001-00000001-device1"),
+            "device1"
+        )
+        {
+            ServerSeq = 1,
+            WrittenAt = writtenAt ?? DateTime.UtcNow,
+        };
 }

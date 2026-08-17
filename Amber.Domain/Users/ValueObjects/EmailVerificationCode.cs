@@ -4,6 +4,7 @@ namespace Amber.Domain.Users.ValueObjects;
 
 public class EmailVerificationCode : ValueObject
 {
+    // NOTE: when update front-end modal must be updated too.
     public const int MaxLength = 8;
 
     public string Value { get; init; }
