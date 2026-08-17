@@ -110,6 +110,31 @@ public class SyncControllerTests
         response.Cells[0].Col.Should().Be("title");
     }
 
+    [TestMethod]
+    public async Task PullAsync_CellHasNoValue_ReturnsCellWithUnsetValue()
+    {
+        // Arrange
+
+        var expectedDto = new PullChangesPageDto(
+            [new CellChangeDto("notes", "row-1", "__deleted", null, "hlc-1", "device1")],
+            NextServerSeq: 1,
+            HasMore: false
+        );
+        _queryMediator.QueryAsync(new PullChangesQuery(0, UserId)).Returns(expectedDto);
+
+        // Act
+
+        var actual = (FileContentResult)
+            await _controller.PullAsync(sinceServerSeq: 0, CancellationToken.None);
+
+        // Assert
+
+        var response = PullResponse.Parser.ParseFrom(actual.FileContents);
+        response.Cells.Should().HaveCount(1);
+        response.Cells[0].Col.Should().Be("__deleted");
+        response.Cells[0].HasValue.Should().BeFalse();
+    }
+
     private void SetRequestBody(ChangeBatch batch)
     {
         var stream = new MemoryStream(batch.ToByteArray());

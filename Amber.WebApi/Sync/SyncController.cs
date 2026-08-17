@@ -74,14 +74,23 @@ public class SyncController(IQueryMediator queryMediator, ICommandMediator comma
             HasMore = page.HasMore,
         };
         response.Cells.AddRange(
-            page.Cells.Select(cell => new CellChange
+            page.Cells.Select(cell =>
             {
-                Tbl = cell.Table,
-                RowId = cell.RowId,
-                Col = cell.Column,
-                Value = cell.Value is null ? null : ByteString.CopyFrom(cell.Value),
-                Hlc = cell.Hlc,
-                DeviceId = cell.DeviceId,
+                var change = new CellChange
+                {
+                    Tbl = cell.Table,
+                    RowId = cell.RowId,
+                    Col = cell.Column,
+                    Hlc = cell.Hlc,
+                    DeviceId = cell.DeviceId,
+                };
+
+                if (cell.Value is not null)
+                {
+                    change.Value = ByteString.CopyFrom(cell.Value);
+                }
+
+                return change;
             })
         );
 
