@@ -30,6 +30,10 @@ services:
       # Database (override the whole connection string, or rely on the default below)
       ConnectionStrings__Database: ${CONNECTION_STRING:-Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Trust Server Certificate=true}
 
+      # Auth
+      Jwt__SecretKey: ${JWT_SECRET_KEY:?JWT_SECRET_KEY is required}
+      GoogleAuth__ClientId: ${GOOGLE_AUTH_CLIENT_ID:?GOOGLE_AUTH_CLIENT_ID is required}
+
       # Lettermint
       Lettermint__ApiKey: ${LETTERMINT_API_KEY:-}
 
