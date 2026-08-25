@@ -59,50 +59,8 @@ services:
       - amber-caddy-data:/data
       - amber-caddy-config:/config
 
-  backup:
-    image: prodrigestivill/postgres-backup-local
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SCHEDULE: "@daily"
-      BACKUP_KEEP_DAYS: 1
-      BACKUP_KEEP_WEEKS: 0
-      BACKUP_KEEP_MONTHS: 0
-    volumes:
-      - amber-db-backups:/backups
-
-  backup-sync:
-    image: rclone/rclone:latest
-    restart: unless-stopped
-    depends_on:
-      - backup
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        while true; do
-          rclone copy /backups/daily hetzner:$$HETZNER_S3_BUCKET/postgres --exclude "*-latest.sql.gz"
-          rclone delete hetzner:$$HETZNER_S3_BUCKET/postgres --min-age 21d
-          sleep 86400
-        done
-    environment:
-      RCLONE_CONFIG_HETZNER_TYPE: s3
-      RCLONE_CONFIG_HETZNER_PROVIDER: Other
-      RCLONE_CONFIG_HETZNER_ENDPOINT: ${HETZNER_S3_ENDPOINT:?HETZNER_S3_ENDPOINT is required}
-      RCLONE_CONFIG_HETZNER_ACCESS_KEY_ID: ${HETZNER_S3_ACCESS_KEY:?HETZNER_S3_ACCESS_KEY is required}
-      RCLONE_CONFIG_HETZNER_SECRET_ACCESS_KEY: ${HETZNER_S3_SECRET_KEY:?HETZNER_S3_SECRET_KEY is required}
-      HETZNER_S3_BUCKET: ${HETZNER_S3_BUCKET:?HETZNER_S3_BUCKET is required}
-    volumes:
-      - amber-db-backups:/backups
-
 volumes:
   amber-db-data:
   amber-dataprotection-keys:
-  amber-db-backups:
   amber-caddy-data:
   amber-caddy-config:
