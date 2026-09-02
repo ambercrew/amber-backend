@@ -7,38 +7,29 @@
     <UserSecretsId>b710b569-a920-4cdc-92df-302b4736e69b</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Asp.Versioning.Mvc" Version="10.2.1" />
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
-    <PackageReference Include="AsyncKeyedLock" Version="8.0.2" />
-    <PackageReference Include="Azure.Identity" Version="1.21.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.35.1" />
-    <PackageReference Include="Grafana.OpenTelemetry" Version="1.11.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.83.0">
+    <PackageReference Include="Asp.Versioning.Mvc" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
+    <PackageReference Include="AsyncKeyedLock" />
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grafana.OpenTelemetry" />
+    <PackageReference Include="Grpc.Tools">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference
-      Include="LiteBus.Messaging.Extensions.Microsoft.DependencyInjection"
-      Version="6.0.2"
-    />
-    <PackageReference
-      Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection"
-      Version="6.0.2"
-    />
-    <PackageReference
-      Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection"
-      Version="6.0.2"
-    />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+    <PackageReference Include="LiteBus.Messaging.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="Sync\Protos\change_batch.proto" GrpcServices="None" />

@@ -10,15 +10,15 @@
     <ProjectReference Include="..\Amber.Application\Amber.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="10.0.1" />
-    <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" Version="10.1.0" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.75.0" />
-    <PackageReference Include="LettermintDotNet" Version="0.13.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23">
+    <PackageReference Include="EntityFrameworkCore.Exceptions.PostgreSQL" />
+    <PackageReference Include="FlexLabs.EntityFrameworkCore.Upsert" />
+    <PackageReference Include="Google.Apis.Auth" />
+    <PackageReference Include="LettermintDotNet" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 </Project>

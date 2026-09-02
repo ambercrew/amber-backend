@@ -4,16 +4,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference
-      Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection"
-      Version="6.0.2"
-    />
-    <PackageReference
-      Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection"
-      Version="6.0.2"
-    />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+    <PackageReference Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>

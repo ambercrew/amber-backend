@@ -1,0 +1,47 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Asp.Versioning.Mvc" Version="10.2.1" />
+    <PackageVersion Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
+    <PackageVersion Include="AsyncKeyedLock" Version="8.0.2" />
+    <PackageVersion Include="AwesomeAssertions" Version="9.5.0" />
+    <PackageVersion Include="Azure.Identity" Version="1.21.0" />
+    <PackageVersion Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageVersion Include="coverlet.collector" Version="10.0.1" />
+    <PackageVersion Include="EntityFrameworkCore.Exceptions.PostgreSQL" Version="10.0.1" />
+    <PackageVersion Include="FlexLabs.EntityFrameworkCore.Upsert" Version="10.1.0" />
+    <PackageVersion Include="Google.Apis.Auth" Version="1.75.0" />
+    <PackageVersion Include="Google.Protobuf" Version="3.35.1" />
+    <PackageVersion Include="Grafana.OpenTelemetry" Version="1.11.0" />
+    <PackageVersion Include="Grpc.Tools" Version="2.83.0" />
+    <PackageVersion Include="LettermintDotNet" Version="0.13.0" />
+    <PackageVersion
+      Include="LiteBus.Commands.Extensions.Microsoft.DependencyInjection"
+      Version="6.0.2"
+    />
+    <PackageVersion
+      Include="LiteBus.Messaging.Extensions.Microsoft.DependencyInjection"
+      Version="6.0.2"
+    />
+    <PackageVersion
+      Include="LiteBus.Queries.Extensions.Microsoft.DependencyInjection"
+      Version="6.0.2"
+    />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.7.23" />
+    <PackageVersion Include="MSTest" Version="4.3.3" />
+    <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
+    <PackageVersion Include="NSubstitute" Version="6.2.0" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+  </ItemGroup>
+</Project>

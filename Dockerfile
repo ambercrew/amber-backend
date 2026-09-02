@@ -3,6 +3,7 @@ ARG BUILD_CONFIGURATION=Release
 ENV HUSKY=0
 WORKDIR /src
 
+COPY Directory.Packages.props ./
 COPY Amber.Domain/Amber.Domain.csproj Amber.Domain/
 COPY Amber.Application/Amber.Application.csproj Amber.Application/
 COPY Amber.Infrastructure/Amber.Infrastructure.csproj Amber.Infrastructure/
