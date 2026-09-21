@@ -18,10 +18,6 @@ public class SyncCellRepository(AmberContext amberContext)
         CancellationToken cancellationToken = default
     )
     {
-        await using var transaction = await AmberContext.Database.BeginTransactionAsync(
-            cancellationToken
-        );
-
         // Keep only the last-writing cell per (table, row, column) within the batch itself,
         // so a batch that touches the same cell more than once doesn't race against itself.
         var dedupedCells = cells
@@ -31,81 +27,151 @@ public class SyncCellRepository(AmberContext amberContext)
             )
             .ToList();
 
-        var nextServerSeq =
-            await AmberContext
-                .SyncCells.Where(c => c.UserId == userId)
-                .Select(c => (long?)c.ServerSeq)
-                .MaxAsync(cancellationToken) ?? 0;
-
         var tables = dedupedCells.Select(c => c.Id.Table).Distinct().ToList();
         var rowIds = dedupedCells.Select(c => c.Id.RowId).Distinct().ToList();
-        var columns = dedupedCells.Select(c => c.Id.Column).Distinct().ToList();
 
-        var candidates = await AmberContext
+        // Every column of the touched rows, not just the pushed ones, so a new tombstone can
+        // find the row's older cells. Values are never loaded, only compared by HLC and replaced.
+        var storedCells = await AmberContext
             .SyncCells.Where(c =>
-                c.UserId == userId
-                && tables.Contains(c.Table)
-                && rowIds.Contains(c.RowId)
-                && columns.Contains(c.Column)
+                c.UserId == userId && tables.Contains(c.Table) && rowIds.Contains(c.RowId)
             )
+            .Select(c => new StoredCell(
+                c.Table,
+                c.RowId,
+                c.Column,
+                new Hlc(c.Hlc.Value),
+                c.SizeInBytes
+            ))
             .ToListAsync(cancellationToken);
 
-        var existingByKey = candidates.ToDictionary(c => new SyncCellId(
-            userId,
-            c.Table,
-            c.RowId,
-            c.Column
-        ));
+        var storedByKey = storedCells.ToDictionary(c => (c.Table, c.RowId, c.Column));
+        var tombstones = storedCells
+            .Where(c => c.Column == SyncCell.DeletedColumn)
+            .ToDictionary(c => (c.Table, c.RowId), c => c.Hlc);
+        var writtenTombstones = new Dictionary<(string Table, string RowId), Hlc>();
+        var writes = new List<(SyncCell Cell, bool IsNew)>();
+        long storageDelta = 0;
 
-        foreach (var cell in dedupedCells)
+        // Tombstones go first so a batch's own older cells for a deleted row are dropped too.
+        foreach (
+            var cell in dedupedCells.OrderByDescending(c => c.Id.Column == SyncCell.DeletedColumn)
+        )
         {
-            existingByKey.TryGetValue(cell.Id, out var existing);
+            storedByKey.TryGetValue((cell.Id.Table, cell.Id.RowId, cell.Id.Column), out var stored);
+            var rowKey = (cell.Id.Table, cell.Id.RowId);
 
-            if (existing is not null && !cell.Hlc.IsAfter(existing.Hlc))
+            if (stored is not null && !cell.Hlc.IsAfter(stored.Hlc))
             {
                 continue;
             }
 
-            nextServerSeq++;
-            var writtenAt = DateTime.UtcNow;
+            if (cell.Id.Column == SyncCell.DeletedColumn)
+            {
+                tombstones[rowKey] = cell.Hlc;
+                writtenTombstones[rowKey] = cell.Hlc;
+            }
+            else if (
+                tombstones.TryGetValue(rowKey, out var tombstone) && !cell.Hlc.IsAfter(tombstone)
+            )
+            {
+                // Older than the row's delete: storing it would keep a dead payload around.
+                continue;
+            }
 
-            if (existing is null)
-            {
-                await AmberContext.SyncCells.AddAsync(
-                    new SyncCell(
-                        new SyncCellId(userId, cell.Id.Table, cell.Id.RowId, cell.Id.Column),
-                        cell.Value,
-                        cell.Hlc,
-                        cell.DeviceId
-                    )
-                    {
-                        ServerSeq = nextServerSeq,
-                        WrittenAt = writtenAt,
-                    }
-                );
-            }
-            else
-            {
-                existing.Value = cell.Value;
-                existing.Hlc = cell.Hlc;
-                existing.DeviceId = cell.DeviceId;
-                existing.ServerSeq = nextServerSeq;
-                existing.WrittenAt = writtenAt;
-            }
+            var written = new SyncCell(
+                new SyncCellId(userId, cell.Id.Table, cell.Id.RowId, cell.Id.Column),
+                cell.Value,
+                cell.Hlc,
+                cell.DeviceId
+            );
+            writes.Add((written, stored is null));
+            storageDelta += written.SizeInBytes - (stored?.SizeInBytes ?? 0);
         }
 
-        await AmberContext.SaveChangesAsync(cancellationToken);
-
-        var usedStorage = await CalculateUserUsedStorageInBytesAsync(userId, cancellationToken);
-        if (usedStorage > maxStoragePerUserInBytes)
+        if (writes.Count == 0)
         {
-            await transaction.RollbackAsync(cancellationToken);
+            return true;
+        }
+
+        // A deleted row only needs its tombstone, so its older cells (e.g. a whole PDF) are
+        // dropped instead of being stored and re-sent to every pulling device. Newer cells stay,
+        // since they resurrect the row; cells overwritten in this batch are newer by definition.
+        var writtenKeys = writes
+            .Select(w => (w.Cell.Table, w.Cell.RowId, w.Cell.Column))
+            .ToHashSet();
+        var staleCells = storedCells
+            .Where(c =>
+                c.Column != SyncCell.DeletedColumn
+                && !writtenKeys.Contains((c.Table, c.RowId, c.Column))
+                && writtenTombstones.TryGetValue((c.Table, c.RowId), out var tombstone)
+                && !c.Hlc.IsAfter(tombstone)
+            )
+            .ToList();
+        storageDelta -= staleCells.Sum(c => c.SizeInBytes);
+
+        // Checked before writing so a rejected push never sends its payloads to the database.
+        // A push that doesn't grow storage is always let through, even for a user over the limit.
+        if (
+            storageDelta > 0
+            && await CalculateUserUsedStorageInBytesAsync(userId, cancellationToken) + storageDelta
+                > maxStoragePerUserInBytes
+        )
+        {
             return false;
         }
 
-        await transaction.CommitAsync(cancellationToken);
+        var serverSeq =
+            await AmberContext
+                .SyncCells.Where(c => c.UserId == userId)
+                .Select(c => (long?)c.ServerSeq)
+                .MaxAsync(cancellationToken) ?? 0;
+        var writtenAt = DateTime.UtcNow;
+        var trackedCells = new List<SyncCell>();
+
+        foreach (var (cell, isNew) in writes)
+        {
+            cell.ServerSeq = ++serverSeq;
+            cell.WrittenAt = writtenAt;
+
+            // Update() on a fresh instance issues an UPDATE by key without loading the old row.
+            if (isNew)
+            {
+                AmberContext.SyncCells.Add(cell);
+            }
+            else
+            {
+                AmberContext.SyncCells.Update(cell);
+            }
+
+            trackedCells.Add(cell);
+        }
+
+        foreach (var stale in staleCells)
+        {
+            var stub = new SyncCell(
+                new SyncCellId(userId, stale.Table, stale.RowId, stale.Column),
+                null,
+                stale.Hlc,
+                string.Empty
+            );
+            AmberContext.SyncCells.Remove(stub);
+            trackedCells.Add(stub);
+        }
+
+        // One SaveChanges, so the upserts and deletes commit atomically.
+        await AmberContext.SaveChangesAsync(cancellationToken);
+
+        // Detached so a later push on the same context can attach its own instances for these keys.
+        foreach (var cell in trackedCells)
+        {
+            AmberContext.Entry(cell).State = EntityState.Detached;
+        }
+
         return true;
     }
+
+    private record StoredCell(string Table, string RowId, string Column, Hlc Hlc, long SizeInBytes);
 
     public async Task<IList<SyncCell>> GetCellsAfterServerSeqAsync(
         Guid userId,

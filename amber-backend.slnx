@@ -4,6 +4,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="Amber.Application.Tests/Amber.Application.Tests.csproj" />
   <Project Path="Amber.Application/Amber.Application.csproj" />
   <Project Path="Amber.Domain.Tests/Amber.Domain.Tests.csproj" />
   <Project Path="Amber.Domain/Amber.Domain.csproj" />

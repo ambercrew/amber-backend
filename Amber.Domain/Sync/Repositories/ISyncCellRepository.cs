@@ -9,8 +9,9 @@ public interface ISyncCellRepository : IUnitOfWorkRepository
     /// Applies the given cells for the user using last-write-wins conflict resolution:
     /// a cell is only written (inserted or updated) if it has no existing counterpart, or
     /// its HLC is after the existing cell's HLC. Winning cells are assigned a new
-    /// <see cref="SyncCell.ServerSeq"/>. If applying the batch would push the user's used
-    /// storage above <paramref name="maxStoragePerUserInBytes"/>, nothing is persisted.
+    /// <see cref="SyncCell.ServerSeq"/>. If the batch grows the user's used storage above
+    /// <paramref name="maxStoragePerUserInBytes"/>, nothing is persisted; a batch that doesn't
+    /// grow it is always applied.
     /// </summary>
     /// <returns>true if the batch was applied; false if it was rejected for exceeding the storage limit.</returns>
     Task<bool> TryUpsertCellsAsync(
