@@ -52,4 +52,7 @@
       WorkingDirectory=".."
     />
   </Target>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Amber.WebApi.Tests" />
+  </ItemGroup>
 </Project>

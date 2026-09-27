@@ -19,4 +19,13 @@ public static class Constants
         /// </summary>
         public const string AuthRateLimitingPolicyName = "AuthRateLimitingPolicyName";
     }
+
+    public static class Sync
+    {
+        /// <summary>
+        /// Largest push request accepted. Must stay above the app's own push batch cap
+        /// (30 MiB), which a single oversized cell may still exceed.
+        /// </summary>
+        public const long MaxPushRequestBytes = 64 * 1024 * 1024;
+    }
 }

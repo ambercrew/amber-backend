@@ -19,6 +19,7 @@ using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using AsyncKeyedLock;
 using EntityFramework.Exceptions.PostgreSQL;
+using Google.Protobuf;
 using Grafana.OpenTelemetry;
 using Lettermint;
 using LiteBus.Commands;
@@ -181,6 +182,8 @@ builder.Services.AddExceptionHandler<DefaultExceptionHandler<InvalidOperationExc
 builder.Services.AddExceptionHandler<DefaultExceptionHandler<UnauthorizedException>>();
 builder.Services.AddExceptionHandler<DefaultExceptionHandler<InsufficientStorageException>>();
 builder.Services.AddExceptionHandler<DefaultExceptionHandler<InternalErrorException>>();
+builder.Services.AddExceptionHandler<DefaultExceptionHandler<BadHttpRequestException>>();
+builder.Services.AddExceptionHandler<DefaultExceptionHandler<InvalidProtocolBufferException>>();
 
 var syncConfigurations = builder
     .Configuration.GetSection("SyncConfigurations")

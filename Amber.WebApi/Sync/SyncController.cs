@@ -19,8 +19,11 @@ public class SyncController(IQueryMediator queryMediator, ICommandMediator comma
 {
     [HttpPost("push")]
     [Consumes("application/x-protobuf")]
+    [RequestSizeLimit(Constants.Sync.MaxPushRequestBytes)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status413PayloadTooLarge)]
     [ProducesResponseType(StatusCodes.Status507InsufficientStorage)]
     [ProducesErrorResponseType(typeof(ProblemDetails))]
     public async Task<IActionResult> PushAsync(CancellationToken cancellationToken)
