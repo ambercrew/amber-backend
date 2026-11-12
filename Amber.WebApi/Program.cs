@@ -103,17 +103,14 @@ builder.Services.AddRateLimiter(opts =>
         return CreateRateLimitPartitionFromConfiguration(context, configuration);
     });
 
-    opts.AddPolicy(
-        Constants.Policies.AuthRateLimitingPolicyName,
-        context =>
-        {
-            var configuration = builder
-                .Configuration.GetSection("AuthRateLimiterConfiguration")
-                .Get<RateLimiterConfiguration>()!;
+    opts.AddPolicy(Constants.Policies.AuthRateLimitingPolicyName, context =>
+    {
+        var configuration = builder
+            .Configuration.GetSection("AuthRateLimiterConfiguration")
+            .Get<RateLimiterConfiguration>()!;
 
-            return CreateRateLimitPartitionFromConfiguration(context, configuration);
-        }
-    );
+        return CreateRateLimitPartitionFromConfiguration(context, configuration);
+    });
 
     opts.OnRejected = async (context, ct) =>
     {

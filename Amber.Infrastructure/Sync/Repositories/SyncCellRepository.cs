@@ -121,11 +121,11 @@ public class SyncCellRepository(AmberContext amberContext)
             return false;
         }
 
-        var serverSeq =
-            await AmberContext
-                .SyncCells.Where(c => c.UserId == userId)
-                .Select(c => (long?)c.ServerSeq)
-                .MaxAsync(cancellationToken) ?? 0;
+        var serverSeq = await AmberContext
+            .SyncCells.Where(c => c.UserId == userId)
+            .Select(c => (long?)c.ServerSeq)
+            .MaxAsync(cancellationToken)
+            ?? 0;
         var writtenAt = DateTime.UtcNow;
         var trackedCells = new List<SyncCell>();
 

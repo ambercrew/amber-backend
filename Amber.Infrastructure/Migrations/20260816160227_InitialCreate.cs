@@ -95,16 +95,13 @@ namespace Amber.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey(
-                        "PK_sync_cells",
-                        x => new
-                        {
-                            x.UserId,
-                            x.tbl,
-                            x.row_id,
-                            x.col,
-                        }
-                    );
+                    table.PrimaryKey("PK_sync_cells", x => new
+                    {
+                        x.UserId,
+                        x.tbl,
+                        x.row_id,
+                        x.col,
+                    });
                     table.ForeignKey(
                         name: "FK_sync_cells_users_UserId",
                         column: x => x.UserId,

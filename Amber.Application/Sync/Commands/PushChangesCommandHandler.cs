@@ -21,9 +21,10 @@ public class PushChangesCommandHandler(
         CancellationToken cancellationToken = default
     )
     {
-        using var releaser =
-            await asyncKeyedLocker.LockOrNullAsync(command.Username, SyncLockTimeOut)
-            ?? throw new InternalErrorException("Internal error, try again");
+        using var releaser = await asyncKeyedLocker.LockOrNullAsync(
+            command.Username,
+            SyncLockTimeOut
+        ) ?? throw new InternalErrorException("Internal error, try again");
 
         var cells = command
             .Cells.Select(dto => new SyncCell(
